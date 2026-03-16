@@ -1,6 +1,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+
+#define CMD_BUFF_SIZE 1024
+#define DELIM " \t\n\r\a"
+#define TOK_BUFF_SIZE 64;
+
+int tshCD(char **args);
+int tshHelp(char **args);
+int tshExit(char *args);
+
+int (*builtinFunc[]) (char **) = {
+    &tshCD,
+//    &tshHelp,
+//    &tshExit 
+};
+
+char *builtinStr[] = {
+    "cd",
+    "help",
+    "exit"
+};
+
+
+int numOfBuiltins()
+{
+    return sizeof(builtinStr) / sizeof(char *);
+}
+
+int tshCD(char **args)
+{
+    if(args[1] == NULL){
+        if(chdir("~") != 0){
+            perror("lsh");
+        }
+    }else{
+        if(chdir(args[1]) != 0){
+            perror("lsh");
+        }
+    }
+    return 1;
+}
+
 
 
 char *getCmd()
@@ -64,6 +108,47 @@ char **parse(char *line)
     return tokens;
 
 }
+
+
+int launch(char **args)
+{
+    pid_t pid, wpid;
+    int status;
+
+    pid = fork();
+    
+    if(pid == 0){
+        if(execvp(args[0],args) == -1){
+            perror("tsh");
+        }
+        exit(EXIT_FAILURE);
+    }else if(pid < 0){
+        perror("tsh");
+    }else{
+        do{
+            wpid = waitpid(pid, &status, WUNTRACED);
+        }while (!WIFEXITED(status) && WIFSIGNALED(status));
+    }
+    return 1;
+}
+
+int execute(char **args)
+{
+    int i;
+
+    if(args[0] == NULL){
+        return 1;
+    }
+    
+    for(int i = 0; i < numOfBuiltins(); i++){
+        if(strcmp(args[0], builtinStr[i]) == 0){
+            return (*builtinFunc[i])(args);
+        }
+    }
+    return launch(args);
+}
+
+
 
 void loop()
 {
