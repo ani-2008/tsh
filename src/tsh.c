@@ -162,7 +162,7 @@ int execute(char **args)
 
 
 
-void loop()
+void mainloop()
 {
     char *line;
     char **args;
@@ -181,7 +181,7 @@ void loop()
 
 int main()
 {
-    loop();
+    mainloop();
     //help and exit
 
 }
