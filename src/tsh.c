@@ -182,7 +182,6 @@ void mainloop()
 int main()
 {
     mainloop();
-    //help and exit
 
 }
 
