@@ -11,12 +11,12 @@
 
 int tshCD(char **args);
 int tshHelp(char **args);
-int tshExit(char *args);
+int tshExit(char **args);
 
 int (*builtinFunc[]) (char **) = {
     &tshCD,
-//    &tshHelp,
-//    &tshExit 
+    &tshHelp,
+    &tshExit 
 };
 
 char *builtinStr[] = {
@@ -34,7 +34,7 @@ int numOfBuiltins()
 int tshCD(char **args)
 {
     if(args[1] == NULL){
-        if(chdir("~") != 0){
+        if(chdir("/home/bitabyte") != 0){
             perror("lsh");
         }
     }else{
@@ -45,7 +45,19 @@ int tshCD(char **args)
     return 1;
 }
 
+int tshExit(char **args)
+{
+    return 0;
+}
 
+int tshHelp(char **args)
+{
+    printf("Toy SHell - TSH\ntype the command ( program names ) and arguments, hit enter\n Here are some builtins\n");
+    for(int i = 0; i < numOfBuiltins(); i++){
+        printf("\t%s\n",builtinStr[i]);
+    }
+    return 1;
+}
 
 char *getCmd()
 {
