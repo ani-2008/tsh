@@ -7,7 +7,7 @@
 
 #define CMD_BUFF_SIZE 1024
 #define DELIM " \t\n\r\a"
-#define TOK_BUFF_SIZE 64;
+#define TOK_BUFF_SIZE 64
 
 int tshCD(char **args);
 int tshHelp(char **args);
