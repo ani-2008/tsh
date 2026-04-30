@@ -1,8 +1,9 @@
 CC = gcc
+CFLAGS = -Wall
 TARGET = tsh 
 SRC = src/tsh.c 
 
 all:
-	$(CC) $(SRC) -o $(TARGET) 
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) 
 clean:
 	rm -f $(TARGET)
