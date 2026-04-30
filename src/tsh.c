@@ -124,7 +124,7 @@ char **parse(char *line)
 
 int launch(char **args)
 {
-    pid_t pid, wpid;
+    pid_t pid;
     int status;
 
     pid = fork();
@@ -138,15 +138,14 @@ int launch(char **args)
         perror("tsh");
     }else{
         do{
-            wpid = waitpid(pid, &status, WUNTRACED);
-        }while (!WIFEXITED(status) && WIFSIGNALED(status));
+            waitpid(pid, &status, WUNTRACED);
+        }while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
     return 1;
 }
 
 int execute(char **args)
 {
-    int i;
 
     if(args[0] == NULL){
         return 1;
