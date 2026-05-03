@@ -34,7 +34,8 @@ int numOfBuiltins()
 int tshCD(char **args)
 {
     if(args[1] == NULL){
-        if(chdir("/home/bitabyte") != 0){
+        char *homeDir = getenv("HOME");
+        if(chdir(homeDir) != 0){
             perror("lsh");
         }
     }else{
