@@ -12,4 +12,4 @@ TSH a toy shell made for understanding about `fork()` and `execvp()`
 
 ## Demo ##
 
-<img width="1286" height="814" alt="image" src="https://github.com/user-attachments/assets/7ea48623-b84b-4652-a3fc-71ef44d2ee62" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/9414a224-b789-4635-8fa3-438aa32305ec" />
