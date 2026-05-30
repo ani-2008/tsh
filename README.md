@@ -4,11 +4,12 @@
 TSH a toy shell made for understanding about `fork()` and `execvp()` 
 
 ## Features ##
-- Custom implementation `cd`, `help`, `exit` commands, also runs any linux commands
+- Custom implementation `cd`, `help`, `exit`, `history` commands, also runs any linux commands
   - `cd`: Changes directories
   - `help`: Displays internal command list and shell usage
-  - `exit`: terminatoes the shell session
-- Process Management: Implemetns `fork()` and `execvp()` to execute commands
+  - `exit`: terminates the shell session
+  - `history`: shows the history of commands, which gets stored in a file named `history_file.txt`
+- Process Management: Implements `fork()` and `execvp()` to execute commands
 
 ## Demo ##
 
