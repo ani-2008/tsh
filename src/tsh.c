@@ -63,6 +63,17 @@ int tshHelp(char **args)
     return 1;
 }
 
+int printDir()
+{
+    char buf[1024];
+    if ( getcwd(buf, sizeof(buf)) == NULL)  {
+        fprintf(stderr,"Error getting current working directory\n");
+    }
+    
+    printf("\033[0;32m[\033[34m%s\033[0;32m]\033[0m $ ",buf);
+    return 1;
+}
+
 int tshHistory(char **args)
 {
     FILE *fp = fopen("history_file.txt","r");
@@ -197,8 +208,8 @@ void mainloop()
         if (history_file == NULL) {
             history_file = fopen("history_file.txt","w");
         }
-
-        printf("$ ");
+        
+        printDir();
 
         line = getCmd();
         args = parse(line);
