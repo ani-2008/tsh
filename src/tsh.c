@@ -11,17 +11,20 @@
 
 int tshCD(char **args);
 int tshHelp(char **args);
+int tshHistory(char **args);
 int tshExit(char **args);
 
 int (*builtinFunc[]) (char **) = {
     &tshCD,
     &tshHelp,
+    &tshHistory,
     &tshExit 
 };
 
 char *builtinStr[] = {
     "cd",
     "help",
+    "history",
     "exit"
 };
 
@@ -56,6 +59,17 @@ int tshHelp(char **args)
     printf("Toy SHell - TSH\ntype the command ( program names ) and arguments, hit enter\n Here are some builtins\n");
     for(int i = 0; i < numOfBuiltins(); i++){
         printf("\t%s\n",builtinStr[i]);
+    }
+    return 1;
+}
+
+int tshHistory(char **args)
+{
+    FILE *fp = fopen("history_file.txt","r");
+    char *buffer = malloc(sizeof(char *) * 1024);
+    while( fgets(buffer,sizeof(buffer), fp) != NULL) {
+        printf("%s",buffer);
+        
     }
     return 1;
 }
@@ -118,6 +132,7 @@ char **parse(char *line)
         token = strtok(NULL, DELIM);
     }
     tokens[position] = NULL;
+
     return tokens;
 
 }
@@ -145,17 +160,25 @@ int launch(char **args)
     return 1;
 }
 
-int execute(char **args)
+int execute(char **args, FILE *file)
 {
-
     if(args[0] == NULL){
         return 1;
     }
-    
+    char **temp = args;
+    while (*temp != NULL) {
+        fprintf(file,"%s\n",*temp);
+        fflush(file);
+        temp++;
+    }
+
+
     for(int i = 0; i < numOfBuiltins(); i++){
+
         if(strcmp(args[0], builtinStr[i]) == 0){
             return (*builtinFunc[i])(args);
         }
+
     }
     return launch(args);
 }
@@ -167,14 +190,25 @@ void mainloop()
     char *line;
     char **args;
     int status;
+    FILE *history_file;
     do {
+        history_file = fopen("history_file.txt","a");
+
+        if (history_file == NULL) {
+            history_file = fopen("history_file.txt","w");
+        }
+
         printf("$ ");
+
         line = getCmd();
         args = parse(line);
-        status = execute(args);
+        status = execute(args, history_file);
+        
         free(line);
         free(args);
+
     } while(status);
+    fclose(history_file);
 
 }
 
