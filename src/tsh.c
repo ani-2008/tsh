@@ -5,7 +5,6 @@
 #include <unistd.h>
 
 
-#define CMD_BUFF_SIZE 1024
 #define DELIM " \t\n\r\a"
 #define TOK_BUFF_SIZE 64
 
@@ -51,11 +50,13 @@ int tshCD(char **args)
 
 int tshExit(char **args)
 {
+    (void)args;
     return 0;
 }
 
 int tshHelp(char **args)
 {
+    (void)args;
     printf("Toy SHell - TSH\ntype the command ( program names ) and arguments, hit enter\n Here are some builtins\n");
     for(int i = 0; i < numOfBuiltins(); i++){
         printf("\t%s\n",builtinStr[i]);
@@ -63,58 +64,42 @@ int tshHelp(char **args)
     return 1;
 }
 
-int printDir()
+void printDir()
 {
     char buf[1024];
     if ( getcwd(buf, sizeof(buf)) == NULL)  {
-        fprintf(stderr,"Error getting current working directory\n");
+        fprintf(stderr,"tsh:$ ");
+    } else {
+        printf("\033[0;32m[\033[34m%s\033[0;32m]\033[0m $ ",buf);
     }
     
-    printf("\033[0;32m[\033[34m%s\033[0;32m]\033[0m $ ",buf);
-    return 1;
 }
 
 int tshHistory(char **args)
 {
+    (void)args;
     FILE *fp = fopen("history_file.txt","r");
-    char *buffer = malloc(sizeof(char *) * 1024);
-    while( fgets(buffer,sizeof(buffer), fp) != NULL) {
+    char *buffer = NULL;
+    size_t len = 0;
+    while( getline(&buffer,&len,fp) != -1 ) {
         printf("%s",buffer);
-        
     }
+    fclose(fp);
+    free(buffer);
     return 1;
 }
 
 char *getCmd()
 {
-    int buffsize = CMD_BUFF_SIZE;
-    int position = 0;
-    int c;
-    char *buff = malloc(sizeof(char) * buffsize);
+    char *line = NULL;
+    size_t len = 0;
 
-    if(!buff){
-        fprintf(stderr, "tsh: allocation error\n");
-        exit(EXIT_FAILURE);
+    if (getline(&line, &len, stdin) == -1) {
+        return NULL;
     }
-    c = getchar();
-    while(1){
-        if(c == EOF || c == '\n'){
-            buff[position] = '\0';
-            return buff;
-        }else{
-            buff[position++] = c;
-        }
-        if(position >= buffsize){
-            buffsize += CMD_BUFF_SIZE;
-            buff = realloc(buff, buffsize * sizeof(char));
-            if(!buff){
-                fprintf(stderr, "tsh: allocation error\n");
-                exit(EXIT_FAILURE);
-            }
-        }
-        c = getchar();
-    }
-
+    
+    line[strcspn(line,"\n")] = '\0';
+    return line;
 }
 
 char **parse(char *line)
@@ -178,11 +163,12 @@ int execute(char **args, FILE *file)
     }
     char **temp = args;
     while (*temp != NULL) {
-        fprintf(file,"%s\n",*temp);
+        fprintf(file,"%s ",*temp);
         fflush(file);
         temp++;
     }
-
+    fputc('\n',file);
+    fflush(file);
 
     for(int i = 0; i < numOfBuiltins(); i++){
 
@@ -217,9 +203,9 @@ void mainloop()
         
         free(line);
         free(args);
-
+        fclose(history_file);
     } while(status);
-    fclose(history_file);
+
 
 }
 
