@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -Werror -Wextra
 TARGET = bin/tsh 
 SRC = src/tsh.c 
 
